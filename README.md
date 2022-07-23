@@ -15,6 +15,9 @@ https://github.com/jgoakley/hassio-addons
 
 
 ## WeeWX
+
+Fork from https://github.com/jgoakley/hassio-addons
+
 Uses the WeeWX Library and MQTT to receive data from a weather station. Weather stations such as the AcuRite 01036M (the only one I have tested this with) have a USB B-mini port in the display unit that receives the signal from the weather station. Plugging a USB cable from the display into your Home Assistant machine should show a device when running the ```lsusb``` command. If you are using a Raspberry Pi you should be able to use the SSH addon to connect to your Home Assistant instance and run the command from there:
 
 ```

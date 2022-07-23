@@ -16,7 +16,7 @@ MQTTPASSWORD="$(jq --raw-output '.mqttPassword' $CONFIG_PATH)"
 
 sed -i '/INSERT_SERVER_URL_HERE/ a \
 \ \ \ \ \ \ \ \ topic = weather\
-\ \ \ \ \ \ \ \ unit_system = US\
+\ \ \ \ \ \ \ \ unit_system = METRIC\
 ' /home/weewx/weewx.conf
 
 sed -i 's/INSERT_SERVER_URL_HERE/mqtt:\/\/'$MQTTUSER':'$MQTTPASSWORD'@core-mosquitto:1883/g' /home/weewx/weewx.conf
