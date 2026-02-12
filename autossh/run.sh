@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bashio
+#!/usr/bin/env bashio
 
 # --- CONSTANTS ---
 PERSISTENT_KEY="/data/id_rsa"
@@ -7,8 +7,7 @@ PERSISTENT_PUB="${PERSISTENT_KEY}.pub"
 # --- 1. KEY GENERATION ---
 if [ ! -f "$PERSISTENT_KEY" ]; then
     bashio::log.info "No persistent key found. Generating new SSH key pair..."
-    # Generate 4096-bit RSA key without passphrase (-N "")
-    ssh-keygen -b 4096 -t ed25519 -N -f "$PERSISTENT_KEY" -N "" -C "homeassistant-autossh"
+    ssh-keygen -t rsa -b 4096 -f "$PERSISTENT_KEY" -N "" -C "homeassistant-autossh"
     chmod 600 "$PERSISTENT_KEY"
     bashio::log.info "New key generated successfully."
 else
@@ -16,18 +15,13 @@ else
 fi
 
 # --- 2. PRINT PUBLIC KEY ---
-# This prints the key to the Add-on logs so the user can copy it
-echo " "
-echo "========================================================================"
-echo "                       YOUR PUBLIC SSH KEY"
-echo "Copy the line below to ~/.ssh/authorized_keys on your remote server(s):"
-echo "------------------------------------------------------------------------"
+bashio::log.info "-----------------------------------------------------------"
+bashio::log.info " PUBLIC SSH KEY (Copy to authorized_keys on remote server):"
+bashio::log.info "-----------------------------------------------------------"
 cat "$PERSISTENT_PUB"
-echo "------------------------------------------------------------------------"
-echo "========================================================================"
-echo " "
+bashio::log.info "-----------------------------------------------------------"
 
-# Ensure .ssh directory exists for root (required for known_hosts)
+# Ensure .ssh directory exists for root
 mkdir -p /root/.ssh
 chmod 700 /root/.ssh
 
@@ -40,18 +34,13 @@ setup_tunnel() {
     local tunnel_args=$5
     local extra=$6
 
-    echo "--- Configuring Connection: $user@$host ---"
+    bashio::log.info "Configuring Connection: $user@$host on port $port"
 
-    # Auto-accept host key to prevent interactive prompt hanging
+    # Auto-accept host key
     ssh-keyscan -p "$port" -H "$host" >> /root/.ssh/known_hosts 2>/dev/null
 
-    echo "Starting autossh instance..."
-    
-    # -M: Monitoring port
-    # -N: Do not execute remote command
-    # -i: Identity file (our persistent key)
-    # -o StrictHostKeyChecking=no: Automatically add new host keys
-    
+    # Start AutoSSH
+    # We use 'exec' logic or backgrounding. Here we background to support multiple connections.
     autossh -M "$mon_port" \
         -o "ServerAliveInterval 30" \
         -o "ServerAliveCountMax 3" \
@@ -65,7 +54,7 @@ setup_tunnel() {
         "$user@$host" &
         
     local pid=$!
-    bashio::log.info "Tunnel started for $host (PID $pid) with args: $tunnel_args"
+    bashio::log.info "Tunnel started for $host (PID $pid)"
 }
 
 # --- 4. MAIN LOOP ---
@@ -90,7 +79,8 @@ else
     done
 fi
 
-echo "All connections initialized. Entering keep-alive loop..."
+bashio::log.info "All tunnels initialized. Entering wait loop..."
 
-# Wait keeps the script running while child processes (autossh) are active
+# Keep the script running to prevent the container from exiting
+# 'wait' will wait for all background processes (autossh instances)
 wait
