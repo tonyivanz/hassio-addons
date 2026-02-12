@@ -1,0 +1,26 @@
+name: "AutoSSH Multi-Tunnel"
+version: "1.3.0"
+slug: "autossh_multi"
+description: "Persistent SSH tunnels using a single auto-generated key."
+url: "https://github.com/tonyivanz/hassio-addons"
+startup: application
+arch:
+  - aarch64
+  - amd64
+  - i386
+  - armv7
+  - armhf
+map:
+  - config:rw
+  - share:rw
+  - data:rw
+options:
+  connections: []
+schema:
+  connections:
+    - host: str
+      user: str
+      port: int
+      monitor_port: int
+      tunnel_args: str
+      extra_args: str
