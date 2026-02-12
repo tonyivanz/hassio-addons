@@ -1,9 +1,10 @@
 name: "AutoSSH Multi-Tunnel"
 version: "1.4.0"
 slug: "autossh_multi"
-description: "Persistent SSH tunnels using a single auto-generated key."
+description: "Persistent SSH tunnels using a single auto-generated key"
 url: "https://github.com/tonyivanz/hassio-addons"
 startup: application
+init: false
 arch:
   - aarch64
   - amd64
