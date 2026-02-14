@@ -18,7 +18,7 @@ RUN if [ "${BUILD_ARCH}" = "aarch64" ]; then \
     else \
       WST_ARCH="linux_amd64"; \
     fi && \
-    DOWNLOAD_URL="https://github.com/erebe/wstunnel/releases/download/v10.5.2/wstunnel_10.5.2_$WST_ARCH.tar.gz" \
+    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/erebe/wstunnel/releases/latest | jq -r ".assets[] | select(.name | contains(\"${WST_ARCH}.tar.gz\")) | .browser_download_url") && \
     curl -L "$DOWNLOAD_URL" -o wstunnel.tar.gz && \
     tar -xzf wstunnel.tar.gz && \
     mv wstunnel /usr/local/bin/wstunnel && \
