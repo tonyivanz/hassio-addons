@@ -1,0 +1,20 @@
+name: "WsTunnel Client"
+description: "Initiate resilient wstunnel connections to multiple destination servers with multi-port forwarding"
+version: "1.0.0"
+slug: "wstunnel_client"
+init: false
+host_network: true
+arch:
+  - aarch64
+  - amd64
+  - i386
+  - armhf
+  - armv7
+options:
+  servers: []
+schema:
+  servers:
+    - url: match(^wss?://.+)
+      upgrade_path_prefix: str?
+      forward:
+        - str
