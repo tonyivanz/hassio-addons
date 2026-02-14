@@ -1,14 +1,13 @@
 #!/usr/bin/with-contenv bashio
 
 # --- CONSTANTS ---
-PERSISTENT_KEY="/data/id_rsa"
+PERSISTENT_KEY="/data/id_ed25519"
 PERSISTENT_PUB="${PERSISTENT_KEY}.pub"
 
 # --- 1. KEY GENERATION ---
 if [ ! -f "$PERSISTENT_KEY" ]; then
     bashio::log.info "No persistent key found. Generating new SSH key pair..."
-    # Generate 4096-bit RSA key without passphrase (-N "")
-    ssh-keygen -t rsa -b 4096 -f "$PERSISTENT_KEY" -N "" -C "homeassistant-autossh"
+    ssh-keygen -b 4096 -t ed25519 -f "$PERSISTENT_KEY" -N "" -C "homeassistant-autossh"
     chmod 600 "$PERSISTENT_KEY"
     bashio::log.info "New key generated successfully."
 else
